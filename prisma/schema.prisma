@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model customer {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique(map: "Customer_email_key")
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  ticket    ticket[]
+}
+
+model ticket {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String          @db.Text
+  status      ticket_status   @default(OPEN)
+  priority    ticket_priority @default(MEDIUM)
+  customerId  Int
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime
+  customer    customer        @relation(fields: [customerId], references: [id], onDelete: Cascade, map: "Ticket_customerId_fkey")
+
+  @@index([customerId], map: "Ticket_customerId_fkey")
+}
+
+enum ticket_status {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ticket_priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
