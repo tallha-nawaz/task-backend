@@ -7,12 +7,23 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 export class CustomerService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	getAll(opts?: { page?: number; limit?: number }) {
+	getAll(opts?: { page?: number; limit?: number; search?: string }) {
 		const page = opts?.page && opts.page > 0 ? opts.page : 1;
 		const limit = opts?.limit && opts.limit > 0 ? opts.limit : 10;
 		const take = limit;
 		const skip = (page - 1) * limit;
+		const search = opts?.search?.trim();
+		const where = search
+			? {
+					OR: [
+						{ firstName: { contains: search } },
+						{ lastName: { contains: search } },
+						{ email: { contains: search } },
+					],
+				}
+			: undefined;
 		return this.prisma.customer.findMany({
+			where,
 			orderBy: { createdAt: 'desc' },
 			take,
 			skip,

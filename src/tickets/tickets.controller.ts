@@ -14,6 +14,7 @@ export class TicketsController {
     @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page', example: 10 })
     @ApiQuery({ name: 'status', required: false, enum: ['OPEN','IN_PROGRESS','RESOLVED','CLOSED'], description: 'Filter by ticket status' })
     @ApiQuery({ name: 'priority', required: false, enum: ['LOW','MEDIUM','HIGH','URGENT'], description: 'Filter by ticket priority' })
+    @ApiQuery({ name: 'search', required: false, type: String, description: 'Search by ticket title or customer name', example: 'Alice' })
     @ApiOperation({ summary: 'Get all tickets' })
     @ApiResponse({ status: 200, description: 'Returns list of tickets' })
     getAllTickets(
@@ -21,10 +22,11 @@ export class TicketsController {
         @Query('limit') limit = '10',
         @Query('status') status?: string,
         @Query('priority') priority?: string,
+        @Query('search') search?: string,
     ) {
         const p = parseInt(page as any, 10) || 1;
         const l = Math.min(parseInt(limit as any, 10) || 10, 100);
-        return this.ticketsService.getAllTickets({ page: p, limit: l, status, priority });
+        return this.ticketsService.getAllTickets({ page: p, limit: l, status, priority, search });
     }
 
     @Get(':id')

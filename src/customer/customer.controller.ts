@@ -12,15 +12,17 @@ export class CustomerController {
 	@Get()
 	@ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (starts at 1)', example: 1 })
 	@ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page', example: 10 })
+	@ApiQuery({ name: 'search', required: false, type: String, description: 'Search by customer name or email', example: 'alice@example.com' })
 	@ApiOperation({ summary: 'Get all customers' })
 	@ApiResponse({ status: 200, description: 'Returns list of customers' })
 	getAll(
 		@Query('page') page = '1',
 		@Query('limit') limit = '10',
+		@Query('search') search?: string,
 	) {
 		const p = parseInt(page as any, 10) || 1;
 		const l = Math.min(parseInt(limit as any, 10) || 10, 100);
-		return this.customerService.getAll({ page: p, limit: l });
+		return this.customerService.getAll({ page: p, limit: l, search });
 	}
 
 	@Get(':id')

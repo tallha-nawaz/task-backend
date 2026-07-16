@@ -7,7 +7,7 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 export class TicketsService {
     constructor(private readonly prisma: PrismaService) {}
 
-    getAllTickets(opts?: { page?: number; limit?: number; status?: string; priority?: string }) {
+    getAllTickets(opts?: { page?: number; limit?: number; status?: string; priority?: string; search?: string }) {
         const page = opts?.page && opts.page > 0 ? opts.page : 1;
         const limit = opts?.limit && opts.limit > 0 ? opts.limit : 10;
         const take = limit;
@@ -15,6 +15,14 @@ export class TicketsService {
         const where: any = {};
         if (opts?.status) where.status = opts.status;
         if (opts?.priority) where.priority = opts.priority;
+        const search = opts?.search?.trim();
+        if (search) {
+            where.OR = [
+                { title: { contains: search } },
+                { customer: { is: { firstName: { contains: search } } } },
+                { customer: { is: { lastName: { contains: search } } } },
+            ];
+        }
         return this.prisma.ticket.findMany({
             where: Object.keys(where).length ? where : undefined,
             orderBy: { createdAt: 'desc' },
