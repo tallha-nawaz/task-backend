@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Patch, Delete, Param, Body, ParseIntPipe, NotFoundException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, ParseIntPipe, NotFoundException, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -10,10 +10,17 @@ export class CustomerController {
 	constructor(private readonly customerService: CustomerService) {}
 
 	@Get()
+	@ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (starts at 1)', example: 1 })
+	@ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page', example: 10 })
 	@ApiOperation({ summary: 'Get all customers' })
 	@ApiResponse({ status: 200, description: 'Returns list of customers' })
-	getAll() {
-		return this.customerService.getAll();
+	getAll(
+		@Query('page') page = '1',
+		@Query('limit') limit = '10',
+	) {
+		const p = parseInt(page as any, 10) || 1;
+		const l = Math.min(parseInt(limit as any, 10) || 10, 100);
+		return this.customerService.getAll({ page: p, limit: l });
 	}
 
 	@Get(':id')

@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Patch, Delete, Param, Body, ParseIntPipe, NotFoundException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, ParseIntPipe, NotFoundException, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
@@ -10,10 +10,21 @@ export class TicketsController {
     constructor(private readonly ticketsService: TicketsService) {}
 
     @Get()
+    @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (starts at 1)', example: 1 })
+    @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page', example: 10 })
+    @ApiQuery({ name: 'status', required: false, enum: ['OPEN','IN_PROGRESS','RESOLVED','CLOSED'], description: 'Filter by ticket status' })
+    @ApiQuery({ name: 'priority', required: false, enum: ['LOW','MEDIUM','HIGH','URGENT'], description: 'Filter by ticket priority' })
     @ApiOperation({ summary: 'Get all tickets' })
     @ApiResponse({ status: 200, description: 'Returns list of tickets' })
-    getAllTickets() {
-        return this.ticketsService.getAllTickets();
+    getAllTickets(
+        @Query('page') page = '1',
+        @Query('limit') limit = '10',
+        @Query('status') status?: string,
+        @Query('priority') priority?: string,
+    ) {
+        const p = parseInt(page as any, 10) || 1;
+        const l = Math.min(parseInt(limit as any, 10) || 10, 100);
+        return this.ticketsService.getAllTickets({ page: p, limit: l, status, priority });
     }
 
     @Get(':id')

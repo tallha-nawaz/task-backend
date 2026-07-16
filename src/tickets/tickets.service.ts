@@ -7,8 +7,20 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 export class TicketsService {
     constructor(private readonly prisma: PrismaService) {}
 
-    getAllTickets() {
-        return this.prisma.ticket.findMany();
+    getAllTickets(opts?: { page?: number; limit?: number; status?: string; priority?: string }) {
+        const page = opts?.page && opts.page > 0 ? opts.page : 1;
+        const limit = opts?.limit && opts.limit > 0 ? opts.limit : 10;
+        const take = limit;
+        const skip = (page - 1) * limit;
+        const where: any = {};
+        if (opts?.status) where.status = opts.status;
+        if (opts?.priority) where.priority = opts.priority;
+        return this.prisma.ticket.findMany({
+            where: Object.keys(where).length ? where : undefined,
+            orderBy: { createdAt: 'desc' },
+            take,
+            skip,
+        });
     }
 
     getTicketById(id: number) {

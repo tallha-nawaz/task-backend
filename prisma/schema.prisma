@@ -14,7 +14,7 @@ model customer {
   email     String   @unique(map: "Customer_email_key")
   phone     String?
   createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt
   ticket    ticket[]
 }
 
@@ -25,8 +25,8 @@ model ticket {
   status      ticket_status   @default(OPEN)
   priority    ticket_priority @default(MEDIUM)
   customerId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   customer    customer        @relation(fields: [customerId], references: [id], onDelete: Cascade, map: "Ticket_customerId_fkey")
 
   @@index([customerId], map: "Ticket_customerId_fkey")
