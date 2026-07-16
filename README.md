@@ -14,3 +14,7 @@ DB_USER=your_user_name
 DB_PASSWORD=your_password
 DB_DATABASE=data_base_name
 DB_CONNECTION_LIMIT=5
+
+
+for testing api endpoints  use this URL
+http://localhost:3000/api/docs
