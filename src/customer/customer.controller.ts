@@ -1,9 +1,7 @@
 import { Controller, Get, Post, Put, Patch, Delete, Param, Body, ParseIntPipe, NotFoundException, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 import { CustomerService } from './customer.service';
-import { CreateCustomerDto } from './dto/create-customer.dto';
-import { UpdateCustomerDto } from './dto/update-customer.dto';
-
+import { CreateCustomerDto,UpdateCustomerDto } from './dto/create-customer.dto'
 @ApiTags('customers')
 @Controller('customers')
 export class CustomerController {
